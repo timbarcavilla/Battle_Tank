@@ -1,0 +1,104 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "BattleTank (Debug)",
+			"request": "launch",
+			"preLaunchTask": "BattleTank Mac Debug Build",
+			"program": "/Users/annie/Desktop/Battle_Tank/BattleTank/Binaries/Mac/BattleTank-Mac-Debug.app/Contents/MacOS/BattleTank-Mac-Debug",
+			"args": [
+			],
+			"cwd": "/Users/Shared/Epic Games/UE_4.22",
+			"type": "lldb"
+		},
+		{
+			"name": "BattleTank (DebugGame)",
+			"request": "launch",
+			"preLaunchTask": "BattleTank Mac DebugGame Build",
+			"program": "/Users/annie/Desktop/Battle_Tank/BattleTank/Binaries/Mac/BattleTank-Mac-DebugGame.app/Contents/MacOS/BattleTank-Mac-DebugGame",
+			"args": [
+			],
+			"cwd": "/Users/Shared/Epic Games/UE_4.22",
+			"type": "lldb"
+		},
+		{
+			"name": "BattleTank (Development)",
+			"request": "launch",
+			"preLaunchTask": "BattleTank Mac Development Build",
+			"program": "/Users/annie/Desktop/Battle_Tank/BattleTank/Binaries/Mac/BattleTank.app/Contents/MacOS/BattleTank",
+			"args": [
+			],
+			"cwd": "/Users/Shared/Epic Games/UE_4.22",
+			"type": "lldb"
+		},
+		{
+			"name": "BattleTank (Shipping)",
+			"request": "launch",
+			"preLaunchTask": "BattleTank Mac Shipping Build",
+			"program": "/Users/annie/Desktop/Battle_Tank/BattleTank/Binaries/Mac/BattleTank-Mac-Shipping.app/Contents/MacOS/BattleTank-Mac-Shipping",
+			"args": [
+			],
+			"cwd": "/Users/Shared/Epic Games/UE_4.22",
+			"type": "lldb"
+		},
+		{
+			"name": "BattleTank (Test)",
+			"request": "launch",
+			"preLaunchTask": "BattleTank Mac Test Build",
+			"program": "/Users/annie/Desktop/Battle_Tank/BattleTank/Binaries/Mac/BattleTank-Mac-Test.app/Contents/MacOS/BattleTank-Mac-Test",
+			"args": [
+			],
+			"cwd": "/Users/Shared/Epic Games/UE_4.22",
+			"type": "lldb"
+		},
+		{
+			"name": "BattleTankEditor (Debug)",
+			"request": "launch",
+			"preLaunchTask": "BattleTankEditor Mac Debug Build",
+			"program": "/Users/Shared/Epic Games/UE_4.22/Engine/Binaries/Mac/UE4Editor-Mac-Debug.app/Contents/MacOS/UE4Editor-Mac-Debug",
+			"args": [
+				"/Users/annie/Desktop/Battle_Tank/BattleTank/BattleTank.uproject"
+			],
+			"cwd": "/Users/Shared/Epic Games/UE_4.22",
+			"type": "lldb"
+		},
+		{
+			"name": "BattleTankEditor (DebugGame)",
+			"request": "launch",
+			"preLaunchTask": "BattleTankEditor Mac DebugGame Build",
+			"program": "/Users/Shared/Epic Games/UE_4.22/Engine/Binaries/Mac/UE4Editor.app/Contents/MacOS/UE4Editor",
+			"args": [
+				"/Users/annie/Desktop/Battle_Tank/BattleTank/BattleTank.uproject"
+			],
+			"cwd": "/Users/Shared/Epic Games/UE_4.22",
+			"type": "lldb"
+		},
+		{
+			"name": "BattleTankEditor (Development)",
+			"request": "launch",
+			"preLaunchTask": "BattleTankEditor Mac Development Build",
+			"program": "/Users/Shared/Epic Games/UE_4.22/Engine/Binaries/Mac/UE4Editor.app/Contents/MacOS/UE4Editor",
+			"args": [
+				"/Users/annie/Desktop/Battle_Tank/BattleTank/BattleTank.uproject"
+			],
+			"cwd": "/Users/Shared/Epic Games/UE_4.22",
+			"type": "lldb"
+		},
+		{
+			"name": "Generate Project Files",
+			"type": "mono",
+			"request": "launch",
+			"program": "/Users/Shared/Epic Games/UE_4.22/Engine/Binaries/DotNET/UnrealBuildTool.exe",
+			"console": "internalConsole",
+			"args": [
+				"-projectfiles",
+				"-vscode",
+				"-project=\"/Users/annie/Desktop/Battle_Tank/BattleTank/BattleTank.uproject\"",
+				"-game",
+				"-engine"
+			],
+			"internalConsoleOptions": "openOnSessionStart",
+			"cwd": "/Users/Shared/Epic Games/UE_4.22"
+		}
+	]
+}
