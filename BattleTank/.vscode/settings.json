@@ -1,5 +1,6 @@
 {
 	"files.exclude": {
+		"/Users/annie/Desktop/Battle_Tank/BattleTank/Saved": true,
 		"/Users/annie/Desktop/Battle_Tank/BattleTank/Content": true,
 		"/Users/annie/Desktop/Battle_Tank/BattleTank/.vscode": true,
 		"/Users/annie/Desktop/Battle_Tank/BattleTank/Intermediate": true
