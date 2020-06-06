@@ -4,6 +4,7 @@
             "name": "UnrealEngine",
             "includePath": [
                 "/Users/Shared/Epic Games/UE_4.22/Engine/Source",
+                "/Users/annie/Desktop/Battle_Tank/BattleTank/Source/BattleTank/Private",
                 "/Users/Shared/Epic Games/UE_4.22/Engine/Intermediate/Build/Mac/UE4Editor/Inc/Engine",
                 "/Users/Shared/Epic Games/UE_4.22/Engine/Source/Runtime",
                 "/Users/Shared/Epic Games/UE_4.22/Engine/Source/Runtime/Engine/Classes",
@@ -398,6 +399,7 @@
                 "/Users/Shared/Epic Games/UE_4.22/Engine/Source/Runtime/AudioMixer/Public/DSP/Encoders",
                 "/Users/annie/Desktop/Battle_Tank/BattleTank/Intermediate/Build/Mac/UE4Editor/Inc/BattleTank",
                 "/Users/annie/Desktop/Battle_Tank/BattleTank/Source",
+                "/Users/annie/Desktop/Battle_Tank/BattleTank/Source/BattleTank/Public",
                 "/Users/annie/Desktop/Battle_Tank/BattleTank/Source/BattleTank",
                 "/usr/include",
                 "/usr/local/include"
