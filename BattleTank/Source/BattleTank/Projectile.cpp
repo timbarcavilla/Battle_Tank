@@ -28,6 +28,10 @@ void AProjectile::Tick(float DeltaTime)
 
 void AProjectile::LaunchProjectile(float LaunchSpeed){
 	UE_LOG(LogTemp,Warning,TEXT("Launched at %f"), LaunchSpeed);
+	if (!ProjMoveComponent){
+		UE_LOG(LogTemp, Error, TEXT("Projectile not set for %s"), *GetOwner()->GetName());
+		return;
+	}
 	ProjMoveComponent->SetVelocityInLocalSpace(FVector::ForwardVector*LaunchSpeed);
 	ProjMoveComponent->Activate();
 }

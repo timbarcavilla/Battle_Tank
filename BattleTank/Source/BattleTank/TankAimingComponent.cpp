@@ -1,5 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "Projectile.h"
 #include "TankBarrel.h"
 #include "TankTurret.h"
 #include "TankAimingComponent.h"
@@ -16,15 +17,32 @@ UTankAimingComponent::UTankAimingComponent()
 	// ...
 }
 
-void UTankAimingComponent::SetBarrelReference(UTankBarrel* SetBarrel){
+void UTankAimingComponent::BeginPlay(){
+	Super::BeginPlay();
+	LastFireTime = FPlatformTime::Seconds();
+}
+
+void UTankAimingComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction){
+	bool isReloading = (FPlatformTime::Seconds() - LastFireTime) < ReloadTimeInSeconds;
+	if (isReloading){
+		FiringState = EFiringState::Reloading;
+	}
+	else if (IsBarrelMoving()){
+		FiringState = EFiringState::Aiming;
+	}
+	else{
+		FiringState = EFiringState::Locked;
+	}
+
+}
+
+void UTankAimingComponent::Initialise(UTankTurret *SetTurret, UTankBarrel *SetBarrel){
+	if (!SetTurret || !SetBarrel) return;
+	Turret = SetTurret;
 	Barrel = SetBarrel;
 }
 
-void UTankAimingComponent::SetTurretReference(UTankTurret* SetTurret){
-	Turret = SetTurret;
-}
-
-void UTankAimingComponent::AimAt(FVector PlaceToAim, float LaunchSpeed){
+void UTankAimingComponent::AimAt(FVector PlaceToAim){
 
 	if (!Barrel || !Turret) return;
 	FVector LaunchVelocity;
@@ -40,13 +58,38 @@ void UTankAimingComponent::AimAt(FVector PlaceToAim, float LaunchSpeed){
 		0,
 		ESuggestProjVelocityTraceOption::DoNotTrace
 	)){
-		auto AimDirection = LaunchVelocity.GetSafeNormal();
+		AimDirection = LaunchVelocity.GetSafeNormal();
 		MoveBarrel(AimDirection);
 	}
 	
 }
 
+void UTankAimingComponent::Fire(){
+
+	if (!Barrel || !ProjectileBP){
+		UE_LOG(LogTemp,Error,TEXT("Barrel or ProjectileBP not set for %s"), *GetOwner()->GetName());
+		return;
+	}
+	if (FiringState != EFiringState::Reloading){
+
+		//Spawn
+		auto Projectile = GetWorld()->SpawnActor<AProjectile>(
+			ProjectileBP,
+			Barrel->GetSocketLocation(FName("Projectile")),
+			Barrel->GetSocketRotation(FName("Projectile"))
+		);
+		if (!Projectile){
+			UE_LOG(LogTemp,Error,TEXT("Projectile not found for %s"), *GetOwner()->GetName());
+			return;
+		}
+		Projectile->LaunchProjectile(LaunchSpeed);
+		LastFireTime = FPlatformTime::Seconds();
+	}
+}
+
 void UTankAimingComponent::MoveBarrel(FVector AimDirection){
+
+	if (!Barrel || !Turret) return;
 	auto BarrelRotator = Barrel->GetForwardVector().Rotation();
 	auto AimAsRotator = AimDirection.Rotation();
 	auto DeltaRotator = AimAsRotator-BarrelRotator;
@@ -55,4 +98,11 @@ void UTankAimingComponent::MoveBarrel(FVector AimDirection){
 	Barrel->Elevate(DeltaRotator.Pitch);
 	Turret->Rotate(DeltaRotator.Yaw);
 	
+}
+
+bool UTankAimingComponent::IsBarrelMoving() const{
+ 
+	if (!Barrel) return false;
+	auto BarrelDirection = Barrel->GetForwardVector().GetSafeNormal();
+	return !BarrelDirection.Equals(AimDirection);
 }

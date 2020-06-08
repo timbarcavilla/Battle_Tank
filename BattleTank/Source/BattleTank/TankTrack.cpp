@@ -3,20 +3,47 @@
 #include "BattleTank.h"
 #include "TankTrack.h"
 
-void UTankTrack::Forward(float Throttle){
-    auto Name = GetName();
+UTankTrack::UTankTrack(){
+    PrimaryComponentTick.bCanEverTick = true;
+    SetNotifyRigidBodyCollision(true);
+}
 
-    auto ForceApplied = GetForwardVector() * Throttle * TrackMaxDrivingForce;
+void UTankTrack::BeginPlay(){
+    Super::BeginPlay();
+
+    OnComponentHit.AddDynamic(this,&UTankTrack::OnHit);
+}
+
+void UTankTrack::OnHit(UPrimitiveComponent *HitComponent, AActor *OtherActor, UPrimitiveComponent *OtherComponent, FVector NormalImpulse, const FHitResult &Hit)
+{
+    DriveTrack();
+    ApplySidewaysForce();
+    CurrentThrottle = 0;
+}
+
+void UTankTrack::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction){
+    Super::TickComponent(DeltaTime,TickType,ThisTickFunction);
+
+}
+
+void UTankTrack::SetThrottle(float Throttle){
+    CurrentThrottle = FMath::Clamp<float>(CurrentThrottle + Throttle,-1,1);
+}
+void UTankTrack::DriveTrack(){
+    auto ForceApplied = GetForwardVector() * CurrentThrottle * TrackMaxDrivingForce;
     auto ForceLocation = GetComponentLocation();
     auto TankRoot = Cast<UPrimitiveComponent>(GetOwner()->GetRootComponent());
     TankRoot->AddForceAtLocation(ForceApplied,ForceLocation);
+    UE_LOG(LogTemp,Warning,TEXT("Tank %s Force applied: %s"), *GetOwner()->GetName() ,*ForceApplied.ToString());
 }
 
-void UTankTrack::Turn(float Scale)
-{
-    auto RotateSpeed = Scale * MaxRotatingSpeed;
-    auto CurrentYaw = GetOwner()->GetRootComponent()->GetForwardVector().Rotation().Yaw;
-    auto DeltaYaw = RotateSpeed * GetWorld()->DeltaTimeSeconds;
-    auto NewYaw = CurrentYaw + DeltaYaw;
-    GetOwner()->GetRootComponent()->SetRelativeRotation(FRotator(0.f, NewYaw, 0.f));
+void UTankTrack::ApplySidewaysForce(){
+    auto SlippageSpeed = FVector::DotProduct(GetComponentVelocity(), GetRightVector());
+    
+    auto DeltaTime = GetWorld()->GetDeltaSeconds();
+    auto CorrectionAcceleration = -(SlippageSpeed / DeltaTime) * GetRightVector();
+
+    auto TankRoot = Cast<UStaticMeshComponent>(GetOwner()->GetRootComponent());
+    auto CorrectionForce = (CorrectionAcceleration * TankRoot->GetMass()) / 2;
+    TankRoot->AddForce(CorrectionForce);
 }
