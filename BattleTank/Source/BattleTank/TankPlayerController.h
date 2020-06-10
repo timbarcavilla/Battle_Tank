@@ -29,14 +29,17 @@ protected:
 private:
 	void AimTowardsCrossHair();
 	bool GetSightRayHitLocation(FVector& OutHitLocation) const;
+	virtual void SetPawn(APawn* InPawn) override;
 	
 	UPROPERTY(EditDefaultsOnly)
 	float CrossHairXLocation = 0.5f;
 
 	UPROPERTY(EditDefaultsOnly)
-	float CrossHairYLocation = 0.2f;
+	float CrossHairYLocation = 0.25f;
 
 	UPROPERTY(EditDefaultsOnly)
 	float LineTraceRange = 10000.f;
 
+	UFUNCTION()
+	void OnTankDeath();
 };

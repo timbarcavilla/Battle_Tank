@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "Engine/World.h"
 #include "Tank.h"
 
 // Sets default values
@@ -10,4 +9,27 @@ ATank::ATank()
 	PrimaryActorTick.bCanEverTick = false;
 }
 
+void ATank::BeginPlay(){
+	Super::BeginPlay();
 
+	CurrentHealth = StartingHealth;
+}
+
+float ATank::TakeDamage(float DamageAmount, struct FDamageEvent const &DamageEvent, class AController *EventInstigator, AActor *DamageCauser){
+
+	int32 DamagePoints = FPlatformMath::RoundToInt(DamageAmount);
+	auto DamageToApply = FMath::Clamp<int32>(DamagePoints, 0, CurrentHealth);
+
+	CurrentHealth -= DamageToApply;
+	if (CurrentHealth <= 0){
+		OnDeath.Broadcast();
+	}
+	UE_LOG(LogTemp,Warning,TEXT("Damaged: %i"), DamageToApply);
+	
+	return DamageToApply;
+
+}
+
+float ATank::GetHealthPercent() const{
+	return (float)CurrentHealth / (float)StartingHealth;
+}

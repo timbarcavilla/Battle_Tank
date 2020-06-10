@@ -11,7 +11,8 @@ UENUM()
 enum class EFiringState : uint8 {
 	Reloading,
 	Aiming,
-	Locked
+	Locked,
+	OutOfAmmo
 };
 
 class AProjectile;
@@ -36,6 +37,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Fire)
 	void Fire();
 
+	EFiringState GetFiringState() const;
+
+	UFUNCTION(BlueprintCallable, Category = Fire)
+	int32 GetAmmo() const;
+
 protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = State)
@@ -43,6 +49,9 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, Category = Setup)
 	TSubclassOf<AProjectile> ProjectileBP;
+
+	UPROPERTY(EditDefaultsOnly, Category = State)
+	int32 Ammo = 20;
 
 private:
 
@@ -59,10 +68,10 @@ private:
 	bool IsBarrelMoving() const;
 	
 	UPROPERTY(EditDefaultsOnly, Category = Firing)
-	float LaunchSpeed = 4000;
+	float LaunchSpeed = 6000;
 
 	UPROPERTY(EditDefaultsOnly, Category = Firing)
-	float ReloadTimeInSeconds = 3;
+	float ReloadTimeInSeconds = 5;
 
 	double LastFireTime = 0;
 

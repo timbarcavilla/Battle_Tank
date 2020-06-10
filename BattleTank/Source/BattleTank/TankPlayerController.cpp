@@ -3,6 +3,7 @@
 #include "BattleTank.h"
 #include "Engine/World.h"
 #include "TankAimingComponent.h"
+#include "Tank.h"
 #include "TankPlayerController.h"
 
 void ATankPlayerController::BeginPlay(){
@@ -19,6 +20,25 @@ void ATankPlayerController::BeginPlay(){
 
 }
 
+void ATankPlayerController::SetPawn(APawn* InPawn){
+    Super::SetPawn(InPawn);
+    if (InPawn)
+    {
+        auto PossessedTank = Cast<ATank>(InPawn);
+        if (!PossessedTank)
+            return;
+
+        // Subscribe our local method to the tank's death event
+        PossessedTank->OnDeath.AddUniqueDynamic(this, &ATankPlayerController::OnTankDeath);
+    }
+}
+
+void ATankPlayerController::OnTankDeath()
+{
+    UE_LOG(LogTemp, Warning, TEXT("Player is Dead"));
+    StartSpectatingOnly();
+}
+
 void ATankPlayerController::Tick(float DeltaTime){
     Super::Tick(DeltaTime);
     AimTowardsCrossHair();
@@ -29,10 +49,11 @@ void ATankPlayerController::AimTowardsCrossHair(){
     auto AimingComponent = GetPawn()->FindComponentByClass<UTankAimingComponent>();
     if (!AimingComponent) return;
     FVector HitLocation;
-    if (GetSightRayHitLocation(HitLocation)){
+    bool bSight = GetSightRayHitLocation(HitLocation);
+    if (bSight)
+    {
         AimingComponent->AimAt(HitLocation);
     }
-    
 }
 
 bool ATankPlayerController::GetSightRayHitLocation(FVector& OutHitLocation) const{

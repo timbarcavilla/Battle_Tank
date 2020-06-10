@@ -24,7 +24,11 @@ void UTankAimingComponent::BeginPlay(){
 
 void UTankAimingComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction){
 	bool isReloading = (FPlatformTime::Seconds() - LastFireTime) < ReloadTimeInSeconds;
-	if (isReloading){
+	if (Ammo <= 0)
+	{
+		FiringState = EFiringState::OutOfAmmo;
+	}
+	else if (isReloading){
 		FiringState = EFiringState::Reloading;
 	}
 	else if (IsBarrelMoving()){
@@ -65,12 +69,13 @@ void UTankAimingComponent::AimAt(FVector PlaceToAim){
 }
 
 void UTankAimingComponent::Fire(){
+	UE_LOG(LogTemp, Warning, TEXT("%s Firing"), *GetOwner()->GetName());
 
 	if (!Barrel || !ProjectileBP){
 		UE_LOG(LogTemp,Error,TEXT("Barrel or ProjectileBP not set for %s"), *GetOwner()->GetName());
 		return;
 	}
-	if (FiringState != EFiringState::Reloading){
+	if (FiringState != EFiringState::Reloading && FiringState != EFiringState::OutOfAmmo){
 
 		//Spawn
 		auto Projectile = GetWorld()->SpawnActor<AProjectile>(
@@ -84,6 +89,7 @@ void UTankAimingComponent::Fire(){
 		}
 		Projectile->LaunchProjectile(LaunchSpeed);
 		LastFireTime = FPlatformTime::Seconds();
+		--Ammo;
 	}
 }
 
@@ -104,5 +110,13 @@ bool UTankAimingComponent::IsBarrelMoving() const{
  
 	if (!Barrel) return false;
 	auto BarrelDirection = Barrel->GetForwardVector().GetSafeNormal();
-	return !BarrelDirection.Equals(AimDirection);
+	return !BarrelDirection.Equals(AimDirection, 0.01);
+}
+
+EFiringState UTankAimingComponent::GetFiringState() const{
+	return FiringState;
+}
+
+int32 UTankAimingComponent::GetAmmo() const{
+	return Ammo;
 }

@@ -20,10 +20,14 @@ public:
 	void SetThrottle(float Throttle);
 
 	UPROPERTY(EditDefaultsOnly)
-	float TrackMaxDrivingForce = 36000000.f;
+	float TrackMaxDrivingForce = 38000000.f;
 
 	UPROPERTY(EditDefaultsOnly, Category = Input)
 	float MaxRotatingSpeed = 10.f;
+protected:
+
+	UFUNCTION(BlueprintCallable)
+	void TrackStart();
 
 private:
 
@@ -33,9 +37,6 @@ private:
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;
 	void ApplySidewaysForce();
 	void DriveTrack();
-
-	UFUNCTION()
-	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
 
 	float CurrentThrottle = 0;
 };

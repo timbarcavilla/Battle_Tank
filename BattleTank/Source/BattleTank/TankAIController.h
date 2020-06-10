@@ -17,9 +17,17 @@ class BATTLETANK_API ATankAIController : public AAIController
 {
 	GENERATED_BODY()
 
+protected:
+
+	UPROPERTY(EditAnywhere, Category = Setup)
+	float AcceptanceRadius = 5000;
+
 private:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DelatTime) override;
-	float AcceptanceRadius = 3000;
+	virtual void SetPawn(APawn* InPawn) override;
+
+	UFUNCTION()
+	void OnTankDeath();
 
 };
