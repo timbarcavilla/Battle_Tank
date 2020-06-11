@@ -33,3 +33,8 @@ float ATank::TakeDamage(float DamageAmount, struct FDamageEvent const &DamageEve
 float ATank::GetHealthPercent() const{
 	return (float)CurrentHealth / (float)StartingHealth;
 }
+
+void ATank::IncreaseHealthPercent(int32 Increment){
+	int32 Increase = FMath::Clamp<int32>(Increment,0,StartingHealth-CurrentHealth);
+	CurrentHealth += Increase;
+}

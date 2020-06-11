@@ -12,7 +12,6 @@ void ATankPlayerController::BeginPlay(){
     auto AimingComponent = GetPawn()->FindComponentByClass<UTankAimingComponent>();
     if (AimingComponent){
         FoundAimingComponent(AimingComponent);
-        UE_LOG(LogTemp, Warning, TEXT("Aiming Component found!"));
     }
     else{
         UE_LOG(LogTemp,Error,TEXT("Aiming Component not found!"));
@@ -37,6 +36,12 @@ void ATankPlayerController::OnTankDeath()
 {
     UE_LOG(LogTemp, Warning, TEXT("Player is Dead"));
     StartSpectatingOnly();
+    auto ControlledTank = GetPawn();
+    if (!ControlledTank)
+        return;
+    ControlledTank->DetachFromControllerPendingDestroy();
+
+    DisplayDeathMenu();
 }
 
 void ATankPlayerController::Tick(float DeltaTime){

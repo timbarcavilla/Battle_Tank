@@ -64,15 +64,18 @@ void AProjectile::LaunchProjectile(float LaunchSpeed){
 void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit){
 	LaunchBlast->Deactivate();
 	ImpactBlast->Activate();
+
+	UE_LOG(LogTemp,Warning,TEXT("Hit %s"), *OtherActor->GetName());
+	UE_LOG(LogTemp, Warning, TEXT("Check %i"), OtherActor->IsRootComponentMovable());
 	auto Origin = CollisionMesh->GetComponentLocation();
-	UGameplayStatics::ApplyRadialDamageWithFalloff(
+	if (OtherActor->IsRootComponentMovable()){
+		Origin = OtherComp->GetComponentLocation();
+	}
+	UGameplayStatics::ApplyRadialDamage(
 		this,
 		ProjectileDamage,
-		MinimumDamage,
 		Origin,
 		ExplosionForce->Radius,
-		ExplosionForce->Radius + 1000,
-		0.5,
 		UDamageType::StaticClass(),
 		TArray<AActor *>() // damage all actors
 	);

@@ -53,6 +53,4 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "Setup")
 	float ProjectileDamage = 20.f;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Setup")
-	float MinimumDamage = 5.f;
 };

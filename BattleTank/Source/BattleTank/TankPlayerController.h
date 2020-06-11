@@ -26,6 +26,9 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent, Category = Setup)
 	void FoundAimingComponent(UTankAimingComponent* AimCompRef);
 
+	UFUNCTION(BlueprintImplementableEvent, Category = Death)
+	void DisplayDeathMenu();
+
 private:
 	void AimTowardsCrossHair();
 	bool GetSightRayHitLocation(FVector& OutHitLocation) const;

@@ -26,7 +26,8 @@ public:
 	UFUNCTION(BlueprintPure, Category = Health)
 	float GetHealthPercent() const;
 
-protected:
+	UFUNCTION(BlueprintCallable, Category = Health)
+	void IncreaseHealthPercent(int32 Increment);
 
 private:
 	// Sets default values for this pawn's properties
@@ -36,7 +37,7 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = Setup)
 	int32 StartingHealth = 100;
-
+	
 	int32 CurrentHealth;
 
 public:
