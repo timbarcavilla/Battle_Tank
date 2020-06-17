@@ -35,12 +35,18 @@ public:
 	void AimAt(FVector PlaceToAim);
 
 	UFUNCTION(BlueprintCallable, Category = Fire)
-	void Fire();
+	void Fire(float Damage);
 
 	EFiringState GetFiringState() const;
 
 	UFUNCTION(BlueprintCallable, Category = Fire)
 	int32 GetAmmo() const;
+
+	UFUNCTION(BlueprintCallable, Category = Fire)
+	int32 GetMaxAmmo() const;
+
+	UFUNCTION(BlueprintCallable, Category = Fire)
+	void SetAmmo(int32 NewAmmo);
 
 protected:
 
@@ -51,7 +57,7 @@ protected:
 	TSubclassOf<AProjectile> ProjectileBP;
 
 	UPROPERTY(EditDefaultsOnly, Category = State)
-	int32 Ammo = 20;
+	int32 MaxAmmo = 20;
 
 private:
 
@@ -68,7 +74,7 @@ private:
 	bool IsBarrelMoving() const;
 	
 	UPROPERTY(EditDefaultsOnly, Category = Firing)
-	float LaunchSpeed = 6000;
+	float LaunchSpeed = 10000;
 
 	UPROPERTY(EditDefaultsOnly, Category = Firing)
 	float ReloadTimeInSeconds = 5;
@@ -76,5 +82,7 @@ private:
 	double LastFireTime = 0;
 
 	FVector AimDirection= FVector(0.f,0.f,0.f);
+
+	int32 Ammo = 0;
 
 };

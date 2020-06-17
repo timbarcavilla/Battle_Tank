@@ -6,6 +6,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "PhysicsEngine/RadialForceComponent.h"
+#include "Tank.h"
 #include "TimerManager.h"
 #include "Projectile.h"
 
@@ -26,6 +27,10 @@ AProjectile::AProjectile()
 	ImpactBlast = CreateDefaultSubobject<UParticleSystemComponent>(FName("Impact Blast"));
 	ImpactBlast->SetupAttachment(RootComponent);
 	ImpactBlast->SetAutoActivate(false);
+
+	Explosion = CreateDefaultSubobject<UParticleSystemComponent>(FName("Explosion"));
+	Explosion->SetupAttachment(RootComponent);
+	Explosion->SetAutoActivate(false);
 
 	ProjMoveComponent = CreateDefaultSubobject<UProjectileMovementComponent>(FName("Projectile Movement"));
 	ProjMoveComponent->bAutoActivate = false;
@@ -49,24 +54,29 @@ void AProjectile::Tick(float DeltaTime)
 
 }
 
-void AProjectile::LaunchProjectile(float LaunchSpeed){
-	UE_LOG(LogTemp,Warning,TEXT("Launched at %f"), LaunchSpeed);
+void AProjectile::LaunchProjectile(float LaunchSpeed, float Damage){
 	if (!ProjMoveComponent){
 		UE_LOG(LogTemp, Error, TEXT("Projectile not set for %s"), *GetOwner()->GetName());
 		return;
 	}
 	ProjMoveComponent->SetVelocityInLocalSpace(FVector::ForwardVector*LaunchSpeed);
 	ProjMoveComponent->Activate();
+	ProjectileDamage = Damage;
 	
 }
 
 
 void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit){
-	LaunchBlast->Deactivate();
-	ImpactBlast->Activate();
-
-	UE_LOG(LogTemp,Warning,TEXT("Hit %s"), *OtherActor->GetName());
-	UE_LOG(LogTemp, Warning, TEXT("Check %i"), OtherActor->IsRootComponentMovable());
+	
+	if (LaunchBlast && ImpactBlast){
+		LaunchBlast->Deactivate();
+		ImpactBlast->Activate();
+		if (OtherActor->IsA(ATank::StaticClass())){
+			if (Cast<ATank>(OtherActor)->GetHealthPercent() <= 0){
+				Explosion->Activate();
+			}
+		}
+	}
 	auto Origin = CollisionMesh->GetComponentLocation();
 	if (OtherActor->IsRootComponentMovable()){
 		Origin = OtherComp->GetComponentLocation();
@@ -80,6 +90,7 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 		TArray<AActor *>() // damage all actors
 	);
 	ExplosionForce->FireImpulse();
+
 	CollisionMesh->DestroyComponent();
 
 	FTimerHandle Timer;

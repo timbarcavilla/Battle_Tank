@@ -7,6 +7,7 @@ ATank::ATank()
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
+
 }
 
 void ATank::BeginPlay(){
@@ -14,6 +15,7 @@ void ATank::BeginPlay(){
 
 	CurrentHealth = StartingHealth;
 }
+
 
 float ATank::TakeDamage(float DamageAmount, struct FDamageEvent const &DamageEvent, class AController *EventInstigator, AActor *DamageCauser){
 
@@ -24,7 +26,6 @@ float ATank::TakeDamage(float DamageAmount, struct FDamageEvent const &DamageEve
 	if (CurrentHealth <= 0){
 		OnDeath.Broadcast();
 	}
-	UE_LOG(LogTemp,Warning,TEXT("Damaged: %i"), DamageToApply);
 	
 	return DamageToApply;
 
@@ -35,6 +36,11 @@ float ATank::GetHealthPercent() const{
 }
 
 void ATank::IncreaseHealthPercent(int32 Increment){
-	int32 Increase = FMath::Clamp<int32>(Increment,0,StartingHealth-CurrentHealth);
+	int32 Increase = FMath::Clamp<int32>(Increment,-CurrentHealth,StartingHealth-CurrentHealth);
 	CurrentHealth += Increase;
+
+	if (CurrentHealth <= 0)
+	{
+		OnDeath.Broadcast();
+	}
 }

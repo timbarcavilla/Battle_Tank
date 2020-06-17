@@ -1,23 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "BattleTank.h"
+#include "SpawnPoint.h"
+#include "SprungWheel.h"
 #include "TankTrack.h"
 
 UTankTrack::UTankTrack(){
     PrimaryComponentTick.bCanEverTick = true;
     SetNotifyRigidBodyCollision(true);
-}
-
-void UTankTrack::BeginPlay(){
-    Super::BeginPlay();
-
-}
-
-void UTankTrack::TrackStart(){
-
-    DriveTrack();
-    ApplySidewaysForce();
-    CurrentThrottle = 0;
 }
 
 void UTankTrack::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction){
@@ -26,22 +16,27 @@ void UTankTrack::TickComponent(float DeltaTime, enum ELevelTick TickType, FActor
 }
 
 void UTankTrack::SetThrottle(float Throttle){
-    CurrentThrottle = FMath::Clamp<float>(CurrentThrottle + Throttle,-1,1);
+    float CurrentThrottle = FMath::Clamp<float>(Throttle,-1,1);
+    DriveTrack(CurrentThrottle);
 }
-void UTankTrack::DriveTrack(){
-    auto ForceApplied = GetForwardVector() * CurrentThrottle * TrackMaxDrivingForce;
-    auto ForceLocation = GetComponentLocation();
-    auto TankRoot = Cast<UPrimitiveComponent>(GetOwner()->GetRootComponent());
-    TankRoot->AddForceAtLocation(ForceApplied,ForceLocation);
+void UTankTrack::DriveTrack(float CurrentThrottle){
+    auto ForceApplied = CurrentThrottle * TrackMaxDrivingForce;
+    auto Wheels = GetWheels();
+    auto ForcePerWheel = ForceApplied / Wheels.Num();
+    for (ASprungWheel* Wheel:Wheels){
+        Wheel->AddDrivingForce(ForcePerWheel);
+    }
 }
 
-void UTankTrack::ApplySidewaysForce(){
-    auto SlippageSpeed = FVector::DotProduct(GetComponentVelocity(), GetRightVector());
-    
-    auto DeltaTime = GetWorld()->GetDeltaSeconds();
-    auto CorrectionAcceleration = -(SlippageSpeed / DeltaTime) * GetRightVector();
+TArray<ASprungWheel*> UTankTrack::GetWheels() const{
+    TArray<USceneComponent*> SpawnPoints;
+    GetChildrenComponents(false,SpawnPoints);
 
-    auto TankRoot = Cast<UStaticMeshComponent>(GetOwner()->GetRootComponent());
-    auto CorrectionForce = (CorrectionAcceleration * TankRoot->GetMass()) / 2;
-    TankRoot->AddForce(CorrectionForce);
+    TArray<ASprungWheel*> Wheels;
+    for (USceneComponent* Point:SpawnPoints){
+        auto SpawnPoint = Cast<USpawnPoint>(Point);
+        Wheels.Emplace(SpawnPoint->GetWheel());
+    }
+
+    return Wheels;
 }

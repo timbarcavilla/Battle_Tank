@@ -9,6 +9,7 @@
 /**
  * Applies forces onto tracks to move the tank. 
  */
+class ASprungWheel;
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 
 class BATTLETANK_API UTankTrack : public UStaticMeshComponent
@@ -24,19 +25,15 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, Category = Input)
 	float MaxRotatingSpeed = 10.f;
-protected:
-
-	UFUNCTION(BlueprintCallable)
-	void TrackStart();
 
 private:
 
 	UTankTrack();
 
-	virtual void BeginPlay() override;
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;
-	void ApplySidewaysForce();
-	void DriveTrack();
+	void DriveTrack(float CurrentThrottle);
 
-	float CurrentThrottle = 0;
+	TArray<ASprungWheel*> GetWheels() const;
+
+	
 };

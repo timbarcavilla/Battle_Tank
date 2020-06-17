@@ -8,7 +8,6 @@
 #include "Tank.generated.h"
 
 // Forward declarations
-
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FTankDelegate);
 
 UCLASS()
@@ -28,7 +27,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = Health)
 	void IncreaseHealthPercent(int32 Increment);
-
+	
 private:
 	// Sets default values for this pawn's properties
 	ATank();

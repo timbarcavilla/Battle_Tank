@@ -7,6 +7,7 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Projectile.generated.h"
 
+class ATank;
 class UParticleSystemComponent;
 class URadialForceComponent;
 class UStaticMeshComponent;
@@ -35,6 +36,9 @@ protected:
 	UParticleSystemComponent* ImpactBlast = nullptr;
 
 	UPROPERTY(VisibleAnywhere, Category = Components)
+	UParticleSystemComponent *Explosion = nullptr;
+
+	UPROPERTY(VisibleAnywhere, Category = Components)
 	URadialForceComponent* ExplosionForce = nullptr;
 
 	UPROPERTY(EditAnywhere)
@@ -43,14 +47,13 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	void LaunchProjectile(float LaunchSpeed);
+	void LaunchProjectile(float LaunchSpeed, float Damage);
 private:
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent *HitComp, AActor *OtherActor, UPrimitiveComponent *OtherComp, FVector NormalImpulse, const FHitResult &Hit);
 
 	void OnTimerExpire();
 
-	UPROPERTY(EditDefaultsOnly, Category = "Setup")
-	float ProjectileDamage = 20.f;
+	float ProjectileDamage = 0.f;
 
 };

@@ -25,8 +25,8 @@ void EmptyLinkFunctionForGeneratedCodeBattleTank_init() {}
 				SingletonFuncArray,
 				ARRAY_COUNT(SingletonFuncArray),
 				PKG_CompiledIn | 0x00000000,
-				0x2FB59BEF,
-				0xD9FA8A48,
+				0x8DF50AA0,
+				0xD2A2EC0E,
 				METADATA_PARAMS(nullptr, 0)
 			};
 			UE4CodeGen_Private::ConstructUPackage(ReturnPackage, PackageParams);

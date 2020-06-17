@@ -6,6 +6,7 @@
 #include "TankAimingComponent.h"
 #include "TankPlayerController.h"
 #include "Tank.h"
+#include "TimerManager.h"
 #include "TankAIController.h"
 
 void ATankAIController::BeginPlay(){
@@ -29,12 +30,33 @@ void ATankAIController::SetPawn(APawn* InPawn){
 }
 
 void ATankAIController::OnTankDeath(){
-    UE_LOG(LogTemp,Warning,TEXT("AI is Dead"));
 
     auto ControlledTank = GetPawn();
     if (!ControlledTank) return;
     ControlledTank->DetachFromControllerPendingDestroy();
-    
+
+    FTimerHandle Timer;
+
+    GetWorld()->GetTimerManager().SetTimer(
+        Timer,
+        this,
+        &ATankAIController::OnTimerExpire,
+        5.f,
+        false);
+
+    auto PlayerController = Cast<ATankPlayerController>(GetWorld()->GetFirstPlayerController());
+    if (!PlayerController) return;
+    PlayerController->IncreaseScore(500);
+    PlayerController->DecreaseEnemyCount();
+
+}
+
+void ATankAIController::OnTimerExpire(){
+    auto ControlledTank = GetPawn();
+    if (!ControlledTank)
+        return;
+    ControlledTank->DestroyConstructedComponents();
+    ControlledTank->Destroy();
 }
 
 
@@ -42,12 +64,20 @@ void ATankAIController::Tick(float DeltaTime){
     auto ControlledTank = GetPawn();
     auto PlayerTank = GetWorld()->GetFirstPlayerController()->GetPawn();
     if (!ControlledTank || !PlayerTank) return;
+    
     auto AimingComponent = ControlledTank->FindComponentByClass<UTankAimingComponent>();
     if (!AimingComponent) return;
     MoveToActor(PlayerTank, AcceptanceRadius);
     auto PlayerLocation = PlayerTank->GetActorLocation();
     PlayerLocation.Z += 35;
     AimingComponent->AimAt(PlayerLocation);
+
+    if ((PlayerLocation - ControlledTank->GetActorLocation()).Size() <= AcceptanceRadius && AimingComponent->GetFiringState() != EFiringState::Locked)
+    {
+        auto MoveLocation = PlayerLocation;
+        MoveLocation.Y += 7000;
+        MoveToLocation(MoveLocation);
+    }
 
     FHitResult Hit;
     FVector PVPLocation;
@@ -66,6 +96,6 @@ void ATankAIController::Tick(float DeltaTime){
     AActor *hitObject = Hit.GetActor();
 
     if (AimingComponent->GetFiringState() == EFiringState::Locked && !hitObject){
-        AimingComponent->Fire();
+        AimingComponent->Fire(ProjectileDamage);
     }
 }

@@ -9,6 +9,7 @@
 
 // Forward declarations
 class UTankAimingComponent;
+
 /**
  * 
  */
@@ -27,7 +28,12 @@ private:
 	virtual void Tick(float DelatTime) override;
 	virtual void SetPawn(APawn* InPawn) override;
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void OnTankDeath();
+
+	void OnTimerExpire();
+
+	UPROPERTY(EditDefaultsOnly, Category = Fire)
+	float ProjectileDamage = 10.f;
 
 };

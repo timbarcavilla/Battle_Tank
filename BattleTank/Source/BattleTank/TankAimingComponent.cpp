@@ -13,13 +13,13 @@ UTankAimingComponent::UTankAimingComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
 	// ...
 }
 
 void UTankAimingComponent::BeginPlay(){
 	Super::BeginPlay();
 	LastFireTime = FPlatformTime::Seconds();
+	Ammo = MaxAmmo;
 }
 
 void UTankAimingComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction){
@@ -68,13 +68,13 @@ void UTankAimingComponent::AimAt(FVector PlaceToAim){
 	
 }
 
-void UTankAimingComponent::Fire(){
-	UE_LOG(LogTemp, Warning, TEXT("%s Firing"), *GetOwner()->GetName());
+void UTankAimingComponent::Fire(float Damage){
 
 	if (!Barrel || !ProjectileBP){
 		UE_LOG(LogTemp,Error,TEXT("Barrel or ProjectileBP not set for %s"), *GetOwner()->GetName());
 		return;
 	}
+	
 	if (FiringState != EFiringState::Reloading && FiringState != EFiringState::OutOfAmmo){
 
 		//Spawn
@@ -87,7 +87,7 @@ void UTankAimingComponent::Fire(){
 			UE_LOG(LogTemp,Error,TEXT("Projectile not found for %s"), *GetOwner()->GetName());
 			return;
 		}
-		Projectile->LaunchProjectile(LaunchSpeed);
+		Projectile->LaunchProjectile(LaunchSpeed,Damage);
 		LastFireTime = FPlatformTime::Seconds();
 		--Ammo;
 	}
@@ -119,4 +119,13 @@ EFiringState UTankAimingComponent::GetFiringState() const{
 
 int32 UTankAimingComponent::GetAmmo() const{
 	return Ammo;
+}
+
+int32 UTankAimingComponent::GetMaxAmmo() const
+{
+	return MaxAmmo;
+}
+
+void UTankAimingComponent::SetAmmo(int32 NewAmmo){
+	Ammo = FMath::Clamp<int32>(NewAmmo,0,MaxAmmo);
 }
